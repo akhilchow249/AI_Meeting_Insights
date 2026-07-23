@@ -1,0 +1,373 @@
+# ═══════════════════════════════════════════════════════════════════════════════
+# docker-compose.yml  — MeetingIQ full stack
+# ═══════════════════════════════════════════════════════════════════════════════
+
+x-gpu-runtime: &gpu-runtime
+  runtime: nvidia
+  environment:
+    NVIDIA_VISIBLE_DEVICES: all
+    NVIDIA_DRIVER_CAPABILITIES: compute,utility
+
+x-common-env: &common-env
+  STORAGE_DIR: /data/sessions
+  REDIS_URL: redis://redis:6379/0
+  TZ: Asia/Kolkata
+
+x-shared-volumes: &shared-volumes
+  - sessions_data:/data/sessions
+  - hf_cache:/root/.cache/huggingface
+
+services:
+
+  # ── Redis ───────────────────────────────────────────────────────────────────
+  redis:
+    image: redis:7.2-alpine
+    container_name: meeting_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: meeting_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: meeting_ai
+      POSTGRES_USER: meeting
+      POSTGRES_PASSWORD: meeting
+      TZ: Asia/Kolkata
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U meeting -d meeting_ai"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  meilisearch:
+    image: getmeili/meilisearch:v1.12
+    container_name: meeting_meilisearch
+    restart: unless-stopped
+    environment:
+      MEILI_MASTER_KEY: ${MEILI_MASTER_KEY:-meeting-ai-master-key}
+      MEILI_ENV: development
+      TZ: Asia/Kolkata
+    ports:
+      - "7700:7700"
+    volumes:
+      - meili_data:/meili_data
+  loki:
+    image: grafana/loki:3.1.0
+    container_name: meeting_loki
+    restart: unless-stopped
+    command: -config.file=/etc/loki/config.yml
+    environment:
+      TZ: Asia/Kolkata
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./observability/loki/config.yml:/etc/loki/config.yml:ro
+      - loki_data:/loki
+
+  promtail:
+    image: grafana/promtail:3.1.0
+    container_name: meeting_promtail
+    restart: unless-stopped
+    command: -config.file=/etc/promtail/config.yml
+    environment:
+      TZ: Asia/Kolkata
+    volumes:
+      - ./observability/promtail/config.yml:/etc/promtail/config.yml:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    depends_on:
+      loki:
+        condition: service_started
+
+  prometheus:
+    image: prom/prometheus:v2.54.1
+    container_name: meeting_prometheus
+    restart: unless-stopped
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --web.enable-lifecycle
+    environment:
+      TZ: Asia/Kolkata
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./observability/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./observability/prometheus/alerts.yml:/etc/prometheus/alerts.yml:ro
+      - prometheus_data:/prometheus
+    depends_on:
+      gateway:
+        condition: service_healthy
+
+  grafana:
+    image: grafana/grafana:11.1.5
+    container_name: meeting_grafana
+    restart: unless-stopped
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+      TZ: Asia/Kolkata
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./observability/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./observability/grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      prometheus:
+        condition: service_started
+      loki:
+        condition: service_started
+
+  # ── Ingestion Service (Stage 1+2) ───────────────────────────────────────────
+  ingestion:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: ingestion
+    container_name: meeting_ingestion
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      <<: *common-env
+    volumes: *shared-volumes
+    depends_on:
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── ASR Service (Stage 3) ───────────────────────────────────────────────────
+  asr:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: asr
+    container_name: meeting_asr
+    restart: unless-stopped
+    <<: *gpu-runtime
+    environment:
+      <<: *common-env
+      WHISPER_MODEL: medium
+      WHISPER_DEVICE: cuda
+      WHISPER_COMPUTE: int8_float16
+      WHISPER_WORKERS: "1"
+    volumes: *shared-volumes
+    depends_on:
+      redis:
+        condition: service_healthy
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+  # ── Diarisation Service (Stage 4) ───────────────────────────────────────────
+  diarisation:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: diarisation
+    container_name: meeting_diarisation
+    restart: unless-stopped
+    <<: *gpu-runtime
+    environment:
+      <<: *common-env
+      HUGGINGFACE_TOKEN: ${HUGGINGFACE_TOKEN}
+      DIAR_MODEL: pyannote/speaker-diarization-3.1
+      DIAR_DEVICE: cuda
+      MIN_SPEAKERS: "1"
+      MAX_SPEAKERS: "6"
+    volumes: *shared-volumes
+    depends_on:
+      redis:
+        condition: service_healthy
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+  # ── Ollama (local LLM backend) ───────────────────────────────────────────────
+  ollama:
+    image: ollama/ollama:latest
+    container_name: meeting_ollama
+    restart: unless-stopped
+    runtime: nvidia
+    environment:
+      NVIDIA_VISIBLE_DEVICES: all
+      NVIDIA_DRIVER_CAPABILITIES: compute,utility
+      TZ: Asia/Kolkata
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+  # ── NLP Service (Stage 5) ───────────────────────────────────────────────────
+  nlp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: nlp
+    container_name: meeting_nlp
+    restart: unless-stopped
+    <<: *gpu-runtime
+    environment:
+      <<: *common-env
+      LLM_MODEL: llama3.2:1b
+      OLLAMA_URL: http://ollama:11434
+      OLLAMA_TIMEOUT: "120"
+    volumes:
+      - sessions_data:/data/sessions
+      - hf_cache:/root/.cache/huggingface
+      - ./nlp_service/models:/app/models:ro
+    depends_on:
+      redis:
+        condition: service_healthy
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+  # ── GenAI Report Service (Stage 6) ──────────────────────────────────────────
+  genai:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: genai
+    container_name: meeting_genai
+    restart: unless-stopped
+    ports:
+      - "8001:8001"
+    environment:
+      STORAGE_DIR: /data/sessions
+      REDIS_URL: redis://redis:6379/0
+      OLLAMA_URL: http://ollama:11434
+      OLLAMA_MODEL: llama3.2:1b
+      LLM_BACKEND: ollama
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_MODEL: gpt-4o
+      TZ: Asia/Kolkata
+    volumes:
+      - sessions_data:/data/sessions
+    depends_on:
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── API Gateway ──────────────────────────────────────────────────────────────
+  gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: gateway
+    container_name: meeting_gateway
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      REDIS_URL: redis://redis:6379/0
+      INGESTION_URL: http://ingestion:8000
+      GENAI_URL: http://genai:8001
+      STORAGE_DIR: /data/sessions
+      DATABASE_URL: postgresql://meeting:meeting@postgres:5432/meeting_ai
+      SEARCH_BACKEND: meilisearch
+      SEARCH_URL: http://meilisearch:7700
+      MEILI_MASTER_KEY: ${MEILI_MASTER_KEY:-meeting-ai-master-key}
+      TZ: Asia/Kolkata
+    volumes:
+      - sessions_data:/data/sessions
+    depends_on:
+      redis:
+        condition: service_healthy
+      ingestion:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+      meilisearch:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
+
+  # ── Frontend (Vite + React) ──────────────────────────────────────────────────
+  # Build context is the frontend directory containing this Dockerfile.
+  # Adjust `context` if your frontend lives in a subdirectory, e.g. ./frontend
+  frontend:
+    build:
+      context: .           # path to the directory containing the frontend Dockerfile
+      dockerfile: Dockerfile
+      target: frontend
+    container_name: meeting_frontend
+    restart: unless-stopped
+    ports:
+      - "5173:5173"        # access the UI at http://localhost:5173
+    environment:
+      # VITE_PROXY_TARGET: Vite's dev server proxies /api /health /metrics here.
+      # Uses Docker internal hostname — frontend container → gateway container.
+      VITE_PROXY_TARGET: http://gateway:8080
+      # VITE_API_BASE must be empty so the browser sends relative URLs that
+      # Vite's proxy intercepts. Do NOT set to http://gateway:8080 here —
+      # that would cause the browser (on the host) to try to resolve "gateway",
+      # which is only resolvable inside the Docker network.
+      VITE_API_BASE: ""
+      TZ: Asia/Kolkata
+    depends_on:
+      gateway:
+        condition: service_healthy
+    # Hot-reload: mount source so edits reflect without rebuild
+    volumes:
+      - /app/frontend/node_modules   # anonymous volume for frontend deps
+
+volumes:
+  redis_data:
+  sessions_data:
+  ollama_data:
+  hf_cache:
+  postgres_data:
+  meili_data:
+  loki_data:
+  prometheus_data:
+  grafana_data:
