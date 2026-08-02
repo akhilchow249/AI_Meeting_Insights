@@ -1,0 +1,25 @@
+{"text": "Can you take ownership of the API integration and have it ready by Friday?", "label": 1, "split": "eval", "source": "gold", "owner": "implied", "deadline": "Friday"}
+{"text": "Let's make sure someone from the backend team handles the database migration before next week.", "label": 1, "split": "eval", "source": "gold", "owner": "backend team", "deadline": "next week"}
+{"text": "Alice, please send the updated spec to the vendor by end of day.", "label": 1, "split": "eval", "source": "gold", "owner": "Alice", "deadline": "end of day"}
+{"text": "We need Bob to review the pull request and merge it before the release on Thursday.", "label": 1, "split": "eval", "source": "gold", "owner": "Bob", "deadline": "Thursday"}
+{"text": "Can the QA team prepare a regression test plan by Wednesday morning?", "label": 1, "split": "eval", "source": "gold", "owner": "QA team", "deadline": "Wednesday morning"}
+{"text": "Please schedule a follow-up call with the client before the end of the sprint.", "label": 1, "split": "eval", "source": "gold", "owner": "implied", "deadline": "end of sprint"}
+{"text": "Someone needs to document the new authentication flow in Confluence this week.", "label": 1, "split": "eval", "source": "gold", "owner": "implied", "deadline": "this week"}
+{"text": "Mark, can you set up the Grafana dashboard for the new metrics by Monday?", "label": 1, "split": "eval", "source": "gold", "owner": "Mark", "deadline": "Monday"}
+{"text": "The team agreed that Sarah will own the incident post-mortem and share findings by Friday.", "label": 1, "split": "eval", "source": "gold", "owner": "Sarah", "deadline": "Friday"}
+{"text": "We need to update the roadmap document and share it with stakeholders before next Tuesday.", "label": 1, "split": "eval", "source": "gold", "owner": "implied", "deadline": "next Tuesday"}
+{"text": "Can you make sure the load tests are run against staging before we sign off on the release?", "label": 1, "split": "eval", "source": "gold", "owner": "implied", "deadline": null}
+{"text": "The DevOps team should rotate the API keys by end of business today.", "label": 1, "split": "eval", "source": "gold", "owner": "DevOps team", "deadline": "end of business today"}
+{"text": "Let's have the design team provide updated mockups for review at the next sprint planning.", "label": 1, "split": "eval", "source": "gold", "owner": "design team", "deadline": "next sprint planning"}
+{"text": "We discussed the authentication flow in detail.", "label": 0, "split": "eval", "source": "gold", "owner": null, "deadline": null}
+{"text": "The team reviewed last quarter's performance numbers.", "label": 0, "split": "eval", "source": "gold", "owner": null, "deadline": null}
+{"text": "Everyone agreed that the current architecture is solid.", "label": 0, "split": "eval", "source": "gold", "owner": null, "deadline": null}
+{"text": "We have been using this approach for two years.", "label": 0, "split": "eval", "source": "gold", "owner": null, "deadline": null}
+{"text": "The client called yesterday to check in on progress.", "label": 0, "split": "eval", "source": "gold", "owner": null, "deadline": null}
+{"text": "The sprint velocity has been consistent this quarter.", "label": 0, "split": "eval", "source": "gold", "owner": null, "deadline": null}
+{"text": "Most of the team prefers the new design direction.", "label": 0, "split": "eval", "source": "gold", "owner": null, "deadline": null}
+{"text": "The product demo went well last week.", "label": 0, "split": "eval", "source": "gold", "owner": null, "deadline": null}
+{"text": "We talked about the upcoming conference.", "label": 0, "split": "eval", "source": "gold", "owner": null, "deadline": null}
+{"text": "The infrastructure team explained how the load balancer works.", "label": 0, "split": "eval", "source": "gold", "owner": null, "deadline": null}
+{"text": "We have decided to postpone the release to Q4.", "label": 0, "split": "eval", "source": "gold", "owner": null, "deadline": null}
+{"text": "The retrospective highlighted that the team communication has improved.", "label": 0, "split": "eval", "source": "gold", "owner": null, "deadline": null}

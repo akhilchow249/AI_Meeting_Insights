@@ -1,0 +1,50 @@
+# ═══════════════════════════════════════════════════════════════════════════════
+# requirements.txt — ALL services combined
+# NOTE: torch/torchaudio are intentionally excluded here.
+#       They are installed directly in the Dockerfile per-stage because
+#       ingestion needs CPU builds and asr/diarisation need CUDA builds.
+#       Mixing them in one file causes pip index resolution conflicts.
+# ═══════════════════════════════════════════════════════════════════════════════
+
+# ── SHARED (used by all three services) ───────────────────────────────────────
+celery==5.4.0
+async_timeout==4.0.3
+kombu==5.3.4
+redis==4.6.0
+numpy==1.26.4
+scipy==1.13.0
+matplotlib==3.8.4
+soundfile==0.12.1
+
+# ── INGESTION SERVICE (Stage 1 + 2) ───────────────────────────────────────────
+fastapi==0.111.0
+uvicorn[standard]==0.29.0
+python-multipart==0.0.9
+aiofiles==23.2.1
+ffmpeg-python==0.2.0
+noisereduce==3.0.3
+librosa==0.10.2
+audioread==3.0.1
+
+# ── ASR SERVICE (Stage 3) ─────────────────────────────────────────────────────
+faster-whisper==1.0.3
+
+# ── DIARISATION SERVICE (Stage 4) ─────────────────────────────────────────────
+huggingface-hub==0.24.7
+pyannote.audio==3.3.2
+
+# ── NLP SERVICE (Stage 5) ─────────────────────────────────────────────────────
+transformers==4.36.2
+accelerate==0.30.1
+sentencepiece==0.2.0
+spacy==3.7.4
+spacy-transformers==1.3.5
+keybert==0.8.5
+sentence-transformers==3.0.1
+scikit-learn==1.5.0
+requests==2.32.3
+
+aiohttp==3.9.5
+openai==1.35.3
+python-dotenv==1.0.1
+psycopg[binary]==3.2.1

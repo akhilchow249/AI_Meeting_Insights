@@ -1,0 +1,30 @@
+{"text": "We are blocked on the authentication service — every deploy breaks the token refresh flow and we have had three incidents in two weeks.", "label": 1, "split": "eval", "source": "gold", "category": "technical_blocker"}
+{"text": "The API rate limit is causing nightly failures in the reporting pipeline and we cannot ship until this is resolved.", "label": 1, "split": "eval", "source": "gold", "category": "technical_blocker"}
+{"text": "Our onboarding funnel has a 70 percent drop-off on step three and nobody knows why.", "label": 1, "split": "eval", "source": "gold", "category": "process_inefficiency"}
+{"text": "The vendor has not delivered the integration spec and the whole backend team is waiting on it.", "label": 1, "split": "eval", "source": "gold", "category": "external_dependency"}
+{"text": "We have unclear requirements from the product team and engineering keeps building the wrong thing.", "label": 1, "split": "eval", "source": "gold", "category": "unclear_requirements"}
+{"text": "Every time we push to staging the database migration fails and we lose two hours reverting.", "label": 1, "split": "eval", "source": "gold", "category": "technical_blocker"}
+{"text": "The QA team is understaffed — we have one tester for eight developers and defects are shipping to production.", "label": 1, "split": "eval", "source": "gold", "category": "resource_constraint"}
+{"text": "We do not have enough budget to hire the two engineers we need for the deadline.", "label": 1, "split": "eval", "source": "gold", "category": "resource_constraint"}
+{"text": "The legacy codebase has zero test coverage so every refactor breaks something unexpected.", "label": 1, "split": "eval", "source": "gold", "category": "technical_blocker"}
+{"text": "Cross-team communication is so slow that decisions that should take hours are taking weeks.", "label": 1, "split": "eval", "source": "gold", "category": "team_communication"}
+{"text": "The CI pipeline takes 45 minutes to run and nobody can get feedback quickly enough.", "label": 1, "split": "eval", "source": "gold", "category": "process_inefficiency"}
+{"text": "We are dependent on a third-party API that has had 99.1 percent uptime this month which is blocking our SLA.", "label": 1, "split": "eval", "source": "gold", "category": "external_dependency"}
+{"text": "The design handoff process is completely broken — engineers get Figma files that are missing states and specs.", "label": 1, "split": "eval", "source": "gold", "category": "process_inefficiency"}
+{"text": "Our main data warehouse job has been failing every night for three days and finance cannot close the books.", "label": 1, "split": "eval", "source": "gold", "category": "technical_blocker"}
+{"text": "We cannot release because the security review process takes six weeks and we have no way to expedite it.", "label": 1, "split": "eval", "source": "gold", "category": "external_dependency"}
+{"text": "I don't think we should use that approach.", "label": 0, "split": "eval", "source": "gold", "category": null}
+{"text": "This is a bit complicated for me to understand.", "label": 0, "split": "eval", "source": "gold", "category": null}
+{"text": "I slightly prefer the second design option.", "label": 0, "split": "eval", "source": "gold", "category": null}
+{"text": "We could probably do better on performance.", "label": 0, "split": "eval", "source": "gold", "category": null}
+{"text": "It would be nice to have a dark mode.", "label": 0, "split": "eval", "source": "gold", "category": null}
+{"text": "I am not a huge fan of the current colour scheme.", "label": 0, "split": "eval", "source": "gold", "category": null}
+{"text": "Maybe we should revisit that decision next quarter.", "label": 0, "split": "eval", "source": "gold", "category": null}
+{"text": "The meeting ran a little longer than expected.", "label": 0, "split": "eval", "source": "gold", "category": null}
+{"text": "Some team members were late joining the call.", "label": 0, "split": "eval", "source": "gold", "category": null}
+{"text": "I think there might be a slightly better way to structure this.", "label": 0, "split": "eval", "source": "gold", "category": null}
+{"text": "The demo went really well and the client seemed happy.", "label": 0, "split": "eval", "source": "gold", "category": null}
+{"text": "We discussed the overall roadmap for next quarter.", "label": 0, "split": "eval", "source": "gold", "category": null}
+{"text": "The sprint velocity has been consistent this quarter.", "label": 0, "split": "eval", "source": "gold", "category": null}
+{"text": "I slightly prefer the React approach over Vue for this project.", "label": 0, "split": "eval", "source": "gold", "category": null}
+{"text": "The new office layout is a bit noisy but it is manageable.", "label": 0, "split": "eval", "source": "gold", "category": null}

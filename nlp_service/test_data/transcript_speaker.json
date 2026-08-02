@@ -1,0 +1,61 @@
+{
+  "speaker_count": 3,
+  "segments": [
+    {
+      "segment_id": 0,
+      "speaker": "SPEAKER_00",
+      "start": 0.5,
+      "end": 14.2,
+      "text": "Hey everyone, let's get started. Today we are reviewing the Q3 pipeline and the API rate limit issue that has been causing failures.",
+      "confidence": 0.94
+    },
+    {
+      "segment_id": 1,
+      "speaker": "SPEAKER_01",
+      "start": 14.8,
+      "end": 35.3,
+      "text": "Yeah I flagged that yesterday. We are completely blocked on the authentication service. Every single deploy breaks the token refresh flow and we have had three incidents in the past two weeks. We cannot ship the release until this is fixed.",
+      "confidence": 0.89
+    },
+    {
+      "segment_id": 2,
+      "speaker": "SPEAKER_02",
+      "start": 36.1,
+      "end": 55.7,
+      "text": "I looked at the logs this morning. The batch job is not respecting the backoff headers we set last sprint. The rate limiter is triggering every evening around 7pm and it is causing downstream failures in the reporting pipeline.",
+      "confidence": 0.91
+    },
+    {
+      "segment_id": 3,
+      "speaker": "SPEAKER_00",
+      "start": 56.4,
+      "end": 72.1,
+      "text": "Okay so Alice, can you take ownership of the backoff fix and have it ready by Friday? And Bob, please review the deployment pipeline before end of day tomorrow.",
+      "confidence": 0.96
+    },
+    {
+      "segment_id": 4,
+      "speaker": "SPEAKER_01",
+      "start": 73.0,
+      "end": 88.5,
+      "text": "Sure, I will handle the backoff fix by Friday. Also we have decided to migrate to the new API gateway next sprint. The team has agreed this is the right call.",
+      "confidence": 0.92
+    },
+    {
+      "segment_id": 5,
+      "speaker": "SPEAKER_02",
+      "start": 89.2,
+      "end": 105.8,
+      "text": "We are also understaffed on the infrastructure side. We have no dedicated DevOps engineer and the manual deployment process is slowing everything down. We need to hire someone or this will keep being a bottleneck.",
+      "confidence": 0.88
+    },
+    {
+      "segment_id": 6,
+      "speaker": "SPEAKER_00",
+      "start": 106.5,
+      "end": 118.3,
+      "text": "Agreed. Going forward we will prioritise the DevOps hire in Q4. I am really happy with the progress the team has made despite these blockers. Great work everyone.",
+      "confidence": 0.95
+    }
+  ]
+}

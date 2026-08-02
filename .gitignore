@@ -1,0 +1,30 @@
+# Ignore hidden cache directories & HuggingFace downloads
+.cache/
+
+# Ignore zip archives
+*.zip
+*.tar.gz
+*.7z
+
+# Ignore temporary files, logs, and datasets
+tmp/
+*.log
+
+# Ignore Python virtual environments
+.venv/
+venv/
+nlp_venv/
+*venv/
+*venv*/
+ENV/
+__pycache__/
+*.pyc
+
+# Ignore secrets / environment variables
+.env
+
+# Ignore Node.js modules
+node_modules/
+
+# Ignore heavy ML models / checkpoints
+nlp_service/models/

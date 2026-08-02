@@ -1,0 +1,20 @@
+{"text": "It would be nice to have a dark mode.", "label": 0, "split": "eval", "source": "gold"}
+{"text": "This is a bit complicated for me to understand.", "label": 0, "split": "eval", "source": "gold"}
+{"text": "We are blocked on the authentication service \u2014 every deploy breaks the token refresh flow and we have had three incidents in two weeks.", "label": 1, "split": "eval", "source": "gold"}
+{"text": "The API rate limit is causing nightly failures in the reporting pipeline and we cannot ship until this is resolved.", "label": 1, "split": "eval", "source": "gold"}
+{"text": "I slightly prefer the second design option.", "label": 0, "split": "eval", "source": "gold"}
+{"text": "Every time we push to staging the database migration fails and we lose two hours reverting.", "label": 1, "split": "eval", "source": "gold"}
+{"text": "Cross-team communication is so slow that decisions that should take hours are taking weeks.", "label": 1, "split": "eval", "source": "gold"}
+{"text": "The legacy codebase has zero test coverage so every refactor breaks something unexpected.", "label": 1, "split": "eval", "source": "gold"}
+{"text": "I am not a huge fan of the current colour scheme.", "label": 0, "split": "eval", "source": "gold"}
+{"text": "The QA team is understaffed \u2014 we have one tester for eight developers and defects are shipping to production.", "label": 1, "split": "eval", "source": "gold"}
+{"text": "The vendor has not delivered the integration spec and the whole backend team is waiting on it.", "label": 1, "split": "eval", "source": "gold"}
+{"text": "Our onboarding funnel has a 70 percent drop-off on step three and nobody knows why.", "label": 1, "split": "eval", "source": "gold"}
+{"text": "The meeting ran a little longer than expected.", "label": 0, "split": "eval", "source": "gold"}
+{"text": "Some team members were late joining the call.", "label": 0, "split": "eval", "source": "gold"}
+{"text": "We could probably do better on performance.", "label": 0, "split": "eval", "source": "gold"}
+{"text": "I don't think we should use that approach.", "label": 0, "split": "eval", "source": "gold"}
+{"text": "I think there might be a slightly better way to structure this.", "label": 0, "split": "eval", "source": "gold"}
+{"text": "We do not have enough budget to hire the two engineers we need for the deadline.", "label": 1, "split": "eval", "source": "gold"}
+{"text": "We have unclear requirements from the product team and engineering keeps building the wrong thing.", "label": 1, "split": "eval", "source": "gold"}
+{"text": "Maybe we should revisit that decision next quarter.", "label": 0, "split": "eval", "source": "gold"}

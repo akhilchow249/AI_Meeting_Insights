@@ -1,0 +1,66 @@
+groups:
+  - name: meeting-ai-observability
+    rules:
+      - alert: AudioExtractionLatencyHigh
+        expr: histogram_quantile(0.95, sum by (le) (rate(audio_extraction_latency_ms_bucket[10m]))) > 60000
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: Audio extraction latency is above 60 seconds
+
+      - alert: TranscriptionRealTimeFactorHigh
+        expr: max_over_time(transcription_latency_per_min[10m]) > 3
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: Whisper transcription is running slower than 3x real time
+
+      - alert: TranscriptionConfidenceLow
+        expr: rate(transcription_confidence_score_sum[15m]) / clamp_min(rate(transcription_confidence_score_count[15m]), 1) < 0.75
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: Average transcription confidence dropped below 0.75
+
+      - alert: DiarisationLatencyHigh
+        expr: histogram_quantile(0.95, sum by (le) (rate(diarisation_latency_ms_bucket[10m]))) > 120000
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: Diarisation latency is above 120 seconds
+
+      - alert: NlpLatencyHigh
+        expr: histogram_quantile(0.95, sum by (le) (rate(nlp_analysis_latency_ms_bucket[10m]))) > 30000
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: NLP analysis latency is above 30 seconds
+
+      - alert: GenaiFirstTokenHigh
+        expr: max_over_time(genai_report_first_token_ms[10m]) > 5000
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: GenAI time to first token is above 5 seconds
+
+      - alert: PipelineStageFailureRateHigh
+        expr: sum by (stage) (rate(pipeline_stage_failure_total[15m])) / clamp_min(sum by (stage) (rate(pipeline_stage_events_total[15m])), 1) > 0.05
+        for: 10m
+        labels:
+          severity: critical
+        annotations:
+          summary: Pipeline stage failure rate is above 5%
+
+      - alert: SearchLatencyHigh
+        expr: histogram_quantile(0.95, sum by (le) (rate(search_query_latency_ms_bucket[10m]))) > 500
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: Transcript search latency is above 500 ms
